@@ -1,0 +1,62 @@
+body {
+    background-color: #181818;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+}
+h1 {
+    text-align: center;
+    padding: 20px;
+    color: #F0F0F0;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+li {
+    border-bottom: 1px solid #333;
+    padding: 20px;
+}
+a {
+    color: #BB86FC;
+    text-decoration: none;
+    margin: 5px;
+}
+a:hover {
+    color: #3700B3;
+}
+.pagination {
+    text-align: center;
+    padding: 20px 0;
+}
+.current-page {
+    background-color: #FFD700;
+    color: #181818;
+}
+button {
+    background-color: #333;
+    color: #181818;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #FFD700;
+    color: white;
+}
+button.liked {
+    background-color: #4CAF50; 
+    color: white;
+}
+
+button.disliked {
+    background-color: #f44336; 
+    color: white;
+}

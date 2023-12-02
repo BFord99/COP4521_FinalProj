@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>COP4521 Final Project: News Feed</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function navigateToPage(page) {
+            window.location.href = "{{ url_for('mainfeed') }}" + "?page=" + page;
+        }
+        function likePost(itemId) {
+        const likeButtonElement = document.getElementById('like-btn-' + itemId);
+        fetch("{{ url_for('like_post') }}", {
+            method: 'POST',
+            body: JSON.stringify({ 'id': itemId }),
+            headers: { 'Content-Type': 'application/json' }
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.is_liked) {
+                    likeButtonElement.classList.add('liked');
+                    document.getElementById('dislike-btn-' + itemId).classList.remove('disliked');
+                    // Increment score.
+                    var scoreElement = document.getElementById('score-' + itemId);
+                    var score = parseInt(scoreElement.textContent.split(": ")[1]);
+                    scoreElement.textContent = "Score: " + (score + 1);
+                } else {
+                    likeButtonElement.classList.remove('liked');
+                    // Decrement score.
+                    var scoreElement = document.getElementById('score-' + itemId);
+                    var score = parseInt(scoreElement.textContent.split(": ")[1]);
+                    if  (score > 0) { 
+                        scoreElement.textContent = "Score: " + (score - 1);
+                    }
+                }
+            }
+    });
+    }
+
+    function dislikePost(itemId) {
+    const dislikeButtonElement = document.getElementById('dislike-btn-' + itemId);
+    fetch("{{ url_for('dislike_post') }}", {
+        method: 'POST',
+        body: JSON.stringify({ 'id': itemId }),
+        headers: { 'Content-Type': 'application/json' }
+    }).then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.is_disliked) {
+                dislikeButtonElement.classList.add('disliked');
+                document.getElementById('like-btn-' + itemId).classList.remove('liked');
+                // Decrement score.
+                var scoreElement = document.getElementById('score-' + itemId);
+                var score = parseInt(scoreElement.textContent.split(": ")[1]);
+                if  (score > 0) { 
+                    scoreElement.textContent = "Score: " + (score - 1);
+                }
+            } else {
+                dislikeButtonElement.classList.remove('disliked');
+                // Increment score.
+                var scoreElement = document.getElementById('score-' + itemId);
+                var score = parseInt(scoreElement.textContent.split(": ")[1]);
+                scoreElement.textContent = "Score: " + (score + 1);
+            }
+        }
+    });
+}
+</script>
+</head>
+<body>
+    <header>
+        <h1>COP4521 Final Project: News Feed</h1>
+        {% if 'user' in session %}
+            <p>Welcome, {{ session['user']['name'] }}</p>
+            <button onclick="window.location.href = '{{ url_for('logout') }}'">Logout</button>
+        {% else %}
+            <button onclick="window.location.href = '{{ url_for('login') }}'">Login</button>
+        {% endif %}
+            <button onclick="window.location.href = '{{ url_for('profile') }}'">Profile</button>
+    </header>
+    <ul>
+        {% for item_tuple in news_items %}
+            <li>
+                <h2>{{ item_tuple.NewsItem.title }}</h2>
+                <p>Created by: {{ item_tuple.NewsItem.created_by }}</p>
+                <p id="score-{{ item_tuple.NewsItem.id }}">Score: {{ item_tuple.NewsItem.score }}</p>
+                <button id="like-btn-{{ item_tuple.NewsItem.id }}" onclick="likePost({{ item_tuple.NewsItem.id }})" class="{{ 'liked' if item_tuple.is_liked else '' }}">Like</button>
+                <button id="dislike-btn-{{ item_tuple.NewsItem.id }}" onclick="dislikePost({{ item_tuple.NewsItem.id }})" class="{{ 'disliked' if item_tuple.is_liked == False else '' }}">Dislike</button>
+                {% if 'user' in session %}
+                {% if session['user']['role'] == 'admin' %}
+                    <button onclick="window.location.href = '{{ url_for('delete_post',deleted_id=item_tuple.NewsItem.id) }}'">Delete</button>
+                {% endif %}
+                {% endif %}
+                {% if item_tuple.NewsItem.text %}
+                    <p>{{ item_tuple.NewsItem.text }}</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="pagination">
+        {% for i in range(page-5, page+5) %}
+            {% if i > 0 and i <= total_pages %}
+                <button onclick="navigateToPage({{ i }})" class="{% if i == page %}current-page{% endif %}">{{ i }}</button>
+            {% endif %}
+        {% endfor %}
+    </div>
+</body>
+</html>

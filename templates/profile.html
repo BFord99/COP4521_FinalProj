@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>User Profile</h1>
+        <button onclick="window.location.href = '{{ url_for('logout') }}'">Logout</button>
+        <button onclick="window.location.href = '{{ url_for('mainfeed') }}'">News Feed</button>
+    </header>
+    <section>
+        <h2>User Information</h2>
+        <p>Name: {{ user.name }}</p>
+        <p>Email: {{ user.email }}</p>
+    </section>
+    <section>
+        <h2>Liked Posts</h2>
+        <ul>
+            {% for post in liked_posts %}
+                <li>
+                    <h3>{{ post.title }}</h3>
+                    <h3>{{ post.score }}</h3>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section>
+        <h2>Disliked Posts</h2>
+        <ul>
+            {% for post in disliked_posts %}
+                <li>
+                    <h3>{{ post.title }}</h3>
+                    <h3>{{ post.score }}</h3>
+                </li>
+            {% endfor %}
+        </ul>
+    </section>
+</body>
+</html>
